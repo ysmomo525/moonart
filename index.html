@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Moon Phase</title>
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #030712;
+            background-image: url('bg.png');
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            color: #ffffff;
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* iPad 直式無邊框懸浮面板 */
+        .app-container {
+            width: 88%;
+            max-width: 480px;
+            /* 通透無邊框毛玻璃 */
+            background: rgba(5, 10, 24, 0.55);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: none; /* 拿掉最外面的框線 */
+            border-radius: 32px;
+            padding: 40px 28px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 日期選擇器與按鈕 */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 36px;
+            justify-content: center;
+        }
+
+        input[type="date"] {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(79, 168, 255, 0.35);
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-size: 17px;
+            color: #ffffff;
+            outline: none;
+            text-align: center;
+            font-family: inherit;
+            transition: all 0.25s ease;
+        }
+
+        input[type="date"]:focus {
+            border-color: #4fa8ff;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        /* 重置按鈕 */
+        .btn-reset {
+            background: rgba(79, 168, 255, 0.15);
+            border: 1px solid #4fa8ff;
+            color: #4fa8ff;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-reset:active {
+            background: #4fa8ff;
+            color: #030712;
+            transform: scale(0.96);
+        }
+
+        /* 月相圖展示容器（已去除所有外圍裝飾圈） */
+        .moon-display-wrap {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* 月相圖片核心：CSS 自動去黑底與圓形羽化 */
+        .moon-img {
+            width: 230px;
+            height: 230px;
+            object-fit: cover;
+            border-radius: 50%; /* 正圓形裁切，去除四方尖角 */
+            
+            /* ⭐ 關鍵去黑底語法：將黑色背景過濾為 100% 透明，保留發光月面 */
+            mix-blend-mode: screen; 
+            
+            filter: drop-shadow(0 0 20px rgba(79, 168, 255, 0.4));
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        /* 純粹中英文月相名稱 */
+        .result-box {
+            padding-top: 4px;
+        }
+
+        .moon-name-zh {
+            font-size: 30px;
+            font-weight: 700;
+            color: #f0f7ff;
+            letter-spacing: 4px;
+            margin-bottom: 6px;
+            text-shadow: 0 0 15px rgba(79, 168, 255, 0.4);
+        }
+
+        .moon-name-en {
+            font-size: 14px;
+            letter-spacing: 2.5px;
+            color: #79b8ff;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="input-group">
+            <input type="date" id="birthdate">
+            <button class="btn-reset" id="resetBtn">重置日期</button>
+        </div>
+
+        <div class="moon-display-wrap">
+            <img id="moonImage" class="moon-img" src="moon_1.png" alt="Moon Phase" onerror="this.style.opacity='0.1'">
+        </div>
+
+        <div class="result-box">
+            <div class="moon-name-zh" id="moonNameZh">──</div>
+            <div class="moon-name-en" id="moonNameEn">──</div>
+        </div>
+    </div>
+
+    <script>
+        // 農曆 1~30 天對應之月相中英文名稱
+        function getPhaseName(dayNum) {
+            if (dayNum === 1 || dayNum === 2) {
+                return { zh: "新月", en: "New Moon" };
+            } else if (dayNum >= 3 && dayNum <= 7) {
+                return { zh: "蛾眉月", en: "Waxing Crescent" };
+            } else if (dayNum === 8 || dayNum === 9) {
+                return { zh: "上弦月", en: "First Quarter" };
+            } else if (dayNum >= 10 && dayNum <= 14) {
+                return { zh: "盈凸月", en: "Waxing Gibbous" };
+            } else if (dayNum === 15 || dayNum === 16) {
+                return { zh: "滿月", en: "Full Moon" };
+            } else if (dayNum >= 17 && dayNum <= 21) {
+                return { zh: "虧凸月", en: "Waning Gibbous" };
+            } else if (dayNum === 22 || dayNum === 23) {
+                return { zh: "下弦月", en: "Third Quarter" };
+            } else {
+                return { zh: "殘月", en: "Waning Crescent" };
+            }
+        }
+
+        const dateInput = document.getElementById('birthdate');
+        const resetBtn = document.getElementById('resetBtn');
+        const moonImage = document.getElementById('moonImage');
+        const moonNameZh = document.getElementById('moonNameZh');
+        const moonNameEn = document.getElementById('moonNameEn');
+
+        // 核心邏輯：西元轉農曆 ➔ 精準調用 moon_1.png 至 moon_30.png
+        function updateMoonPhase() {
+            const val = dateInput.value;
+            if (!val) return;
+
+            const [year, month, day] = val.split('-').map(Number);
+            const solar = Solar.fromYmd(year, month, day);
+            const lunar = solar.getLunar();
+            const dayNum = lunar.getDay(); // 農曆日：1 至 30
+
+            const phaseInfo = getPhaseName(dayNum);
+
+            // 圖片切換淡入效果
+            moonImage.style.opacity = '0';
+            setTimeout(() => {
+                moonImage.src = `moon_${dayNum}.png`;
+                moonImage.style.opacity = '1';
+            }, 100);
+
+            moonNameZh.textContent = phaseInfo.zh;
+            moonNameEn.textContent = phaseInfo.en;
+        }
+
+        // 重置為今日日期
+        function resetToToday() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            dateInput.value = `${y}-${m}-${d}`;
+            updateMoonPhase();
+        }
+
+        dateInput.addEventListener('change', updateMoonPhase);
+        dateInput.addEventListener('input', updateMoonPhase);
+        resetBtn.addEventListener('click', resetToToday);
+
+        // 頁面初始化
+        window.addEventListener('DOMContentLoaded', resetToToday);
+    </script>
+</body>
+</html>
