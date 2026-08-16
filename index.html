@@ -12,7 +12,7 @@
             padding: 0;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
-            border-radius: 0 !important; /* 全面強制直角，無圓角 */
+            border-radius: 0 !important; /* 全面強制直角 */
         }
 
         body {
@@ -23,7 +23,7 @@
             background-position: center top;
             background-repeat: no-repeat;
             color: #ffffff;
-            min-height: 100vh;
+            height: 100vh;
             width: 100vw;
             display: flex;
             justify-content: center;
@@ -31,51 +31,63 @@
             overflow: hidden;
         }
 
-        /* 主容器：100% 完全透明、無框線 */
+        /* 主容器：撐滿螢幕高度，將上下 Logo 推至邊界 */
         .app-container {
-            width: 88%;
-            max-width: 480px;
+            width: 90%;
+            max-width: 520px;
+            height: 100vh;
             background: transparent;
             border: none;
             box-shadow: none;
-            padding: 10px;
+            padding: 55px 20px 45px; /* 上下給予適當留白，靠近邊緣但不貼死 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* 上、中、下均勻分散 */
+            align-items: center;
             text-align: center;
+        }
+
+        /* 1. 頂部：品牌 Logo（放大 50% 並靠近頂部） */
+        .brand-logo-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .brand-logo {
+            max-width: 270px; /* 由原 180px 放大 50% 至 270px */
+            max-height: 75px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 12px rgba(79, 168, 255, 0.4));
+        }
+
+        /* 2. 中間主要內容區（月相、名稱、輸入框） */
+        .main-content-wrap {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            width: 100%;
+            flex: 1; /* 佔據中央空間，自然垂直置中 */
+            margin: 15px 0;
         }
 
-        /* 1. 頂部 Brand Logo */
-        .brand-logo-wrap {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .brand-logo {
-            max-width: 180px;
-            max-height: 48px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 10px rgba(79, 168, 255, 0.3));
-        }
-
-        /* 2. 月相圖展示區 */
+        /* 月相展示區 */
         .moon-display-wrap {
-            width: 250px;
-            height: 250px;
-            margin: 0 auto 16px;
+            width: 260px;
+            height: 260px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
         }
 
-        /* 月相圖案：邊緣羽化 + 智慧濾色去黑底 */
+        /* 月相圖案：羽化消除黑圈 + 智慧濾色去黑底 */
         .moon-img {
-            width: 235px;
-            height: 235px;
+            width: 245px;
+            height: 245px;
             object-fit: cover;
             mix-blend-mode: screen;
             -webkit-mask-image: radial-gradient(circle at center, black 58%, transparent 68%);
@@ -84,9 +96,9 @@
             transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
-        /* 3. 月相中英文名稱 */
+        /* 月相中英文名稱 */
         .result-box {
-            margin-bottom: 28px;
+            margin-bottom: 30px;
         }
 
         .moon-name-zh {
@@ -106,14 +118,13 @@
             font-weight: 500;
         }
 
-        /* 4. 日期輸入框與按鈕（直角俐落設計） */
+        /* 日期選擇器與重置按鈕（直角設計） */
         .input-group {
             display: flex;
             gap: 12px;
             justify-content: center;
             width: 100%;
             max-width: 380px;
-            margin-bottom: 28px;
         }
 
         input[type="date"] {
@@ -159,16 +170,17 @@
             color: #030712;
         }
 
-        /* 5. 底部 Event Logo */
+        /* 3. 底部：活動 Logo（靠近底部邊緣） */
         .event-logo-wrap {
             display: flex;
             justify-content: center;
             align-items: center;
+            width: 100%;
         }
 
         .event-logo {
-            max-width: 160px;
-            max-height: 42px;
+            max-width: 190px;
+            max-height: 50px;
             object-fit: contain;
             filter: drop-shadow(0 0 10px rgba(79, 168, 255, 0.3));
         }
@@ -181,18 +193,20 @@
             <img src="brand_logo.png" alt="Brand Logo" class="brand-logo" onerror="this.style.display='none'">
         </div>
 
-        <div class="moon-display-wrap">
-            <img id="moonImage" class="moon-img" src="moon_1.png" alt="Moon Phase" onerror="this.style.opacity='0.1'">
-        </div>
+        <div class="main-content-wrap">
+            <div class="moon-display-wrap">
+                <img id="moonImage" class="moon-img" src="moon_1.png" alt="Moon Phase" onerror="this.style.opacity='0.1'">
+            </div>
 
-        <div class="result-box">
-            <div class="moon-name-zh" id="moonNameZh">──</div>
-            <div class="moon-name-en" id="moonNameEn">──</div>
-        </div>
+            <div class="result-box">
+                <div class="moon-name-zh" id="moonNameZh">──</div>
+                <div class="moon-name-en" id="moonNameEn">──</div>
+            </div>
 
-        <div class="input-group">
-            <input type="date" id="birthdate">
-            <button class="btn-reset" id="resetBtn">重置日期</button>
+            <div class="input-group">
+                <input type="date" id="birthdate">
+                <button class="btn-reset" id="resetBtn">重置日期</button>
+            </div>
         </div>
 
         <div class="event-logo-wrap">
