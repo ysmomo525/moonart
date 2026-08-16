@@ -12,6 +12,7 @@
             padding: 0;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
+            border-radius: 0 !important; /* 全面強制直角，無圓角 */
         }
 
         body {
@@ -30,106 +31,66 @@
             overflow: hidden;
         }
 
-        /* iPad 直式無邊框懸浮面板 */
+        /* 主容器：100% 完全透明、無框線 */
         .app-container {
             width: 88%;
             max-width: 480px;
-            /* 通透無邊框毛玻璃 */
-            background: rgba(5, 10, 24, 0.55);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: none; /* 拿掉最外面的框線 */
-            border-radius: 32px;
-            padding: 40px 28px;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 10px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-        }
-
-        /* 日期選擇器與按鈕 */
-        .input-group {
             display: flex;
-            gap: 12px;
-            margin-bottom: 36px;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
         }
 
-        input[type="date"] {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(79, 168, 255, 0.35);
-            border-radius: 14px;
-            padding: 14px 16px;
-            font-size: 17px;
-            color: #ffffff;
-            outline: none;
-            text-align: center;
-            font-family: inherit;
-            transition: all 0.25s ease;
+        /* 1. 頂部 Brand Logo */
+        .brand-logo-wrap {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        input[type="date"]:focus {
-            border-color: #4fa8ff;
-            background: rgba(255, 255, 255, 0.12);
+        .brand-logo {
+            max-width: 180px;
+            max-height: 48px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(79, 168, 255, 0.3));
         }
 
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            cursor: pointer;
-        }
-
-        /* 重置按鈕 */
-        .btn-reset {
-            background: rgba(79, 168, 255, 0.15);
-            border: 1px solid #4fa8ff;
-            color: #4fa8ff;
-            padding: 14px 20px;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .btn-reset:active {
-            background: #4fa8ff;
-            color: #030712;
-            transform: scale(0.96);
-        }
-
-        /* 月相圖展示容器（已去除所有外圍裝飾圈） */
+        /* 2. 月相圖展示區 */
         .moon-display-wrap {
             width: 250px;
             height: 250px;
-            margin: 0 auto 32px;
+            margin: 0 auto 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
         }
 
-        /* 月相圖片核心：CSS 自動去黑底與圓形羽化 */
+        /* 月相圖案：邊緣羽化 + 智慧濾色去黑底 */
         .moon-img {
-            width: 230px;
-            height: 230px;
+            width: 235px;
+            height: 235px;
             object-fit: cover;
-            border-radius: 50%; /* 正圓形裁切，去除四方尖角 */
-            
-            /* ⭐ 關鍵去黑底語法：將黑色背景過濾為 100% 透明，保留發光月面 */
-            mix-blend-mode: screen; 
-            
-            filter: drop-shadow(0 0 20px rgba(79, 168, 255, 0.4));
+            mix-blend-mode: screen;
+            -webkit-mask-image: radial-gradient(circle at center, black 58%, transparent 68%);
+            mask-image: radial-gradient(circle at center, black 58%, transparent 68%);
+            filter: drop-shadow(0 0 25px rgba(79, 168, 255, 0.45));
             transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
-        /* 純粹中英文月相名稱 */
+        /* 3. 月相中英文名稱 */
         .result-box {
-            padding-top: 4px;
+            margin-bottom: 28px;
         }
 
         .moon-name-zh {
-            font-size: 30px;
+            font-size: 32px;
             font-weight: 700;
             color: #f0f7ff;
             letter-spacing: 4px;
@@ -144,14 +105,80 @@
             text-transform: uppercase;
             font-weight: 500;
         }
+
+        /* 4. 日期輸入框與按鈕（直角俐落設計） */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            width: 100%;
+            max-width: 380px;
+            margin-bottom: 28px;
+        }
+
+        input[type="date"] {
+            flex: 1;
+            background: rgba(5, 10, 24, 0.65);
+            border: 1px solid rgba(79, 168, 255, 0.4);
+            padding: 13px 16px;
+            font-size: 16px;
+            color: #ffffff;
+            outline: none;
+            text-align: center;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        input[type="date"]:focus {
+            border-color: #4fa8ff;
+            background: rgba(8, 16, 36, 0.9);
+            box-shadow: 0 0 10px rgba(79, 168, 255, 0.3);
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        /* 直角科技藍按鈕 */
+        .btn-reset {
+            background: rgba(79, 168, 255, 0.15);
+            border: 1px solid #4fa8ff;
+            color: #4fa8ff;
+            padding: 13px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-reset:active {
+            background: #4fa8ff;
+            color: #030712;
+        }
+
+        /* 5. 底部 Event Logo */
+        .event-logo-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .event-logo {
+            max-width: 160px;
+            max-height: 42px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(79, 168, 255, 0.3));
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <div class="input-group">
-            <input type="date" id="birthdate">
-            <button class="btn-reset" id="resetBtn">重置日期</button>
+        <div class="brand-logo-wrap">
+            <img src="brand_logo.png" alt="Brand Logo" class="brand-logo" onerror="this.style.display='none'">
         </div>
 
         <div class="moon-display-wrap">
@@ -162,10 +189,19 @@
             <div class="moon-name-zh" id="moonNameZh">──</div>
             <div class="moon-name-en" id="moonNameEn">──</div>
         </div>
+
+        <div class="input-group">
+            <input type="date" id="birthdate">
+            <button class="btn-reset" id="resetBtn">重置日期</button>
+        </div>
+
+        <div class="event-logo-wrap">
+            <img src="event_logo.png" alt="Event Logo" class="event-logo" onerror="this.style.display='none'">
+        </div>
     </div>
 
     <script>
-        // 農曆 1~30 天對應之月相中英文名稱
+        // 農曆 1~30 天對應之月相名稱
         function getPhaseName(dayNum) {
             if (dayNum === 1 || dayNum === 2) {
                 return { zh: "新月", en: "New Moon" };
@@ -192,7 +228,7 @@
         const moonNameZh = document.getElementById('moonNameZh');
         const moonNameEn = document.getElementById('moonNameEn');
 
-        // 核心邏輯：西元轉農曆 ➔ 精準調用 moon_1.png 至 moon_30.png
+        // 核心計算：西元轉農曆 ➔ 精準載入 moon_1.png 至 moon_30.png
         function updateMoonPhase() {
             const val = dateInput.value;
             if (!val) return;
@@ -204,7 +240,7 @@
 
             const phaseInfo = getPhaseName(dayNum);
 
-            // 圖片切換淡入效果
+            // 圖片淡入更新
             moonImage.style.opacity = '0';
             setTimeout(() => {
                 moonImage.src = `moon_${dayNum}.png`;
