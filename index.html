@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Moon Phase</title>
+    <title>Moon Phase Decoder</title>
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
     <style>
         * {
@@ -12,7 +12,7 @@
             padding: 0;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
-            border-radius: 0 !important; /* 全面強制直角 */
+            border-radius: 0 !important; /* 全面強制直角設計 */
         }
 
         body {
@@ -31,7 +31,7 @@
             overflow: hidden;
         }
 
-        /* 主容器：撐滿螢幕高度，將上下 Logo 推至邊界 */
+        /* 主容器：撐滿全螢幕高度，將上下 Logo 推至邊緣 */
         .app-container {
             width: 90%;
             max-width: 520px;
@@ -39,10 +39,10 @@
             background: transparent;
             border: none;
             box-shadow: none;
-            padding: 55px 20px 45px; /* 上下給予適當留白，靠近邊緣但不貼死 */
+            padding: 55px 20px 45px; /* 上下適當留白，靠近邊緣但不貼死 */
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* 上、中、下均勻分散 */
+            justify-content: space-between; /* 頂部 Logo、中間內容、底部 Logo 均勻分散 */
             align-items: center;
             text-align: center;
         }
@@ -56,13 +56,13 @@
         }
 
         .brand-logo {
-            max-width: 270px; /* 由原 180px 放大 50% 至 270px */
-            max-height: 75px;
+            max-width: 280px; /* 放大 50% */
+            max-height: 80px;
             object-fit: contain;
             filter: drop-shadow(0 0 12px rgba(79, 168, 255, 0.4));
         }
 
-        /* 2. 中間主要內容區（月相、名稱、輸入框） */
+        /* 2. 中間核心區（月相、名稱、輸入框） */
         .main-content-wrap {
             display: flex;
             flex-direction: column;
@@ -73,7 +73,7 @@
             margin: 15px 0;
         }
 
-        /* 月相展示區 */
+        /* 月相圖展示容器 */
         .moon-display-wrap {
             width: 260px;
             height: 260px;
@@ -84,7 +84,7 @@
             position: relative;
         }
 
-        /* 月相圖案：羽化消除黑圈 + 智慧濾色去黑底 */
+        /* 月相圖案：羽化消除黑邊 + 智慧濾色去黑底 */
         .moon-img {
             width: 245px;
             height: 245px;
@@ -118,7 +118,7 @@
             font-weight: 500;
         }
 
-        /* 日期選擇器與重置按鈕（直角設計） */
+        /* 日期選擇器與重置按鈕（直角俐落設計） */
         .input-group {
             display: flex;
             gap: 12px;
@@ -170,7 +170,7 @@
             color: #030712;
         }
 
-        /* 3. 底部：活動 Logo（靠近底部邊緣） */
+        /* 3. 底部：活動 Logo（靠近底部邊界） */
         .event-logo-wrap {
             display: flex;
             justify-content: center;
