@@ -44,6 +44,7 @@
             background: transparent;
             border: none;
             box-shadow: none;
+            /* 上下留白依據螢幕高度動態計算，並兼容 safe-area */
             padding: max(20px, env(safe-area-inset-top, 20px)) 16px max(20px, env(safe-area-inset-bottom, 20px));
             display: flex;
             flex-direction: column;
@@ -226,11 +227,11 @@
     </div>
 
     <script>
-        // ✅ 嚴格校正後的農曆 1~30 天對應月相中英文名稱
+        // ✅ 天文校正版月相名稱分類（初一為新月，初二至初七為蛾眉月）
         function getPhaseName(dayNum) {
-            if (dayNum === 1 || dayNum === 2) {
+            if (dayNum === 1) {
                 return { zh: "新月", en: "New Moon" };
-            } else if (dayNum >= 3 && dayNum <= 7) {
+            } else if (dayNum >= 2 && dayNum <= 7) {
                 return { zh: "蛾眉月", en: "Waxing Crescent" };
             } else if (dayNum === 8 || dayNum === 9) {
                 return { zh: "上弦月", en: "First Quarter" };
@@ -243,7 +244,7 @@
             } else if (dayNum === 22 || dayNum === 23) {
                 return { zh: "下弦月", en: "Third Quarter" };
             } else {
-                return { zh: "殘月", en: "Waning Crescent" }; // 24~30日精準判定為殘月
+                return { zh: "殘月", en: "Waning Crescent" };
             }
         }
 
