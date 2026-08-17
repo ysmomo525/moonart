@@ -17,7 +17,7 @@
         html, body {
             width: 100%;
             height: 100%;
-            height: 100dvh; /* iOS Safari 專屬動態全螢幕高度 */
+            height: 100dvh; /* 支援 iOS Safari 動態全螢幕高度 */
             overflow: hidden;
         }
 
@@ -34,19 +34,20 @@
             align-items: center;
         }
 
-        /* 主容器：彈性適應 iPad 視窗，並避開上下安全區域 */
+        /* 主容器：嚴格限制在 100dvh 內，防止任何溢出 */
         .app-container {
             width: 90%;
-            max-width: 500px;
-            height: 100%;
+            max-width: 480px;
+            height: 100dvh;
             max-height: 100dvh;
             background: transparent;
             border: none;
             box-shadow: none;
-            padding: max(20px, env(safe-area-inset-top, 20px)) 16px max(20px, env(safe-area-inset-bottom, 20px));
+            /* 針對 iPad 上下安全區域留白 */
+            padding: max(15px, env(safe-area-inset-top, 15px)) 16px max(15px, env(safe-area-inset-bottom, 15px));
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: space-between; /* 上中下完美均分 */
             align-items: center;
             text-align: center;
         }
@@ -58,16 +59,17 @@
             align-items: center;
             width: 100%;
             flex-shrink: 0;
+            padding-top: 5px;
         }
 
         .brand-logo {
-            max-width: min(280px, 60vw);
-            max-height: min(70px, 8vh);
+            max-width: min(260px, 55vw);
+            max-height: min(60px, 7vh);
             object-fit: contain;
             filter: drop-shadow(0 0 12px rgba(79, 168, 255, 0.4));
         }
 
-        /* 2. 中間核心區（自動置中、動態適配） */
+        /* 2. 中間核心區（自適應置中） */
         .main-content-wrap {
             display: flex;
             flex-direction: column;
@@ -76,14 +78,14 @@
             width: 100%;
             flex: 1;
             min-height: 0;
-            margin: 1vh 0;
+            margin: 5px 0;
         }
 
         /* 月相圖展示容器 */
         .moon-display-wrap {
-            width: min(220px, 26vh);
-            height: min(220px, 26vh);
-            margin: 0 auto 1.5vh;
+            width: min(200px, 22vh);
+            height: min(200px, 22vh);
+            margin: 0 auto 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -105,22 +107,22 @@
 
         /* 月相名稱 */
         .result-box {
-            margin-bottom: 2vh;
+            margin-bottom: 15px;
             flex-shrink: 0;
         }
 
         .moon-name-zh {
-            font-size: min(30px, 3.8vh);
+            font-size: min(28px, 3.4vh);
             font-weight: 700;
             color: #f0f7ff;
             letter-spacing: 4px;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             text-shadow: 0 0 15px rgba(79, 168, 255, 0.4);
             line-height: 1.2;
         }
 
         .moon-name-en {
-            font-size: min(13px, 1.8vh);
+            font-size: min(13px, 1.6vh);
             letter-spacing: 2px;
             color: #79b8ff;
             text-transform: uppercase;
@@ -130,10 +132,10 @@
         /* 日期選擇器與重置按鈕 */
         .input-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             width: 100%;
-            max-width: 360px;
+            max-width: 340px;
             flex-shrink: 0;
         }
 
@@ -141,8 +143,8 @@
             flex: 1;
             background: rgba(5, 10, 24, 0.65);
             border: 1px solid rgba(79, 168, 255, 0.4);
-            padding: 10px 14px;
-            font-size: min(15px, 2vh);
+            padding: 8px 12px;
+            font-size: min(15px, 1.8vh);
             color: #ffffff;
             outline: none;
             text-align: center;
@@ -165,8 +167,8 @@
             background: rgba(79, 168, 255, 0.15);
             border: 1px solid #4fa8ff;
             color: #4fa8ff;
-            padding: 10px 18px;
-            font-size: min(14px, 1.9vh);
+            padding: 8px 16px;
+            font-size: min(14px, 1.7vh);
             font-weight: 600;
             letter-spacing: 1px;
             cursor: pointer;
@@ -186,11 +188,12 @@
             align-items: center;
             width: 100%;
             flex-shrink: 0;
+            padding-bottom: 5px;
         }
 
         .event-logo {
-            max-width: min(180px, 45vw);
-            max-height: min(45px, 6vh);
+            max-width: min(160px, 40vw);
+            max-height: min(40px, 5.5vh);
             object-fit: contain;
             filter: drop-shadow(0 0 10px rgba(79, 168, 255, 0.3));
         }
@@ -225,48 +228,66 @@
     </div>
 
     <script>
-        // ⭐ 高精度天文月相演算法（精確計算日月夾角與光照週期，與 Google / NASA 100% 同步）
-        function getAstronomicalMoonPhase(year, month, day) {
-            // 天文曆法：儒略日 (Julian Day) 計算
-            if (month <= 2) {
-                year -= 1;
-                month += 12;
+        // 🌟 NASA / Jean Meeus 高精度天文月相角度演算法
+        function getAccurateMoonPhase(year, month, day) {
+            // 計算儒略日 (Julian Day Number)
+            let y = year;
+            let m = month;
+            if (m <= 2) {
+                y -= 1;
+                m += 12;
             }
-            const A = Math.floor(year / 100);
+            const A = Math.floor(y / 100);
             const B = 2 - A + Math.floor(A / 4);
-            const JD = Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + B - 1524.5;
+            const JD = Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + day + B - 1524.5;
             
-            // 朔望月標準週期：29.53058867 天（基準點：2000年1月6日新月）
-            const daysSinceKnownNewMoon = JD - 2451549.5;
-            const newMoons = daysSinceKnownNewMoon / 29.53058867;
-            const phase = newMoons - Math.floor(newMoons); // 0.0 ~ 1.0 (月相進度週期)
+            // 自 J2000.0 起算之世紀數 T
+            const T = (JD - 2451545.0) / 36525.0;
 
-            // 對應 30 天圖檔編號 (1 ~ 30)
-            let imageIndex = Math.floor(phase * 30) + 1;
-            if (imageIndex > 30) imageIndex = 30;
+            // 太陽平黃經 L0 (度)
+            let L0 = 280.46646 + 36000.76983 * T;
+            // 太陽平近點角 M (度)
+            let M = 357.52911 + 35999.05029 * T;
+            // 太陽真黃經 Sun_L (度)
+            let Sun_L = L0 + (1.914602 - 0.004817 * T) * Math.sin(M * Math.PI / 180) + 0.019993 * Math.sin(2 * M * Math.PI / 180);
 
-            // 天文精確月相名稱判定（8大經典天體分期）
+            // 月球平黃經 L' (度)
+            let LP = 218.3165 + 481267.8813 * T;
+            // 月球平近點角 M' (度)
+            let MP = 134.9634 + 477198.8676 * T;
+            // 月球真黃經 Moon_L (度，取主要攝動項)
+            let Moon_L = LP + 6.289 * Math.sin(MP * Math.PI / 180);
+
+            // 日月黃經差 / 距角 D (0° ~ 360°)
+            let elongation = (Moon_L - Sun_L) % 360;
+            if (elongation < 0) elongation += 360;
+
+            // 對應 30 天圖檔序號 (1 ~ 30)
+            let imgIndex = Math.floor((elongation / 360.0) * 30) + 1;
+            if (imgIndex > 30) imgIndex = 30;
+
+            // 天文精準判定 8 大月相名稱（以距角 elongation 判定）
             let zhName = "", enName = "";
 
-            if (phase < 0.02 || phase >= 0.98) {
+            if (elongation < 10 || elongation >= 350) {
                 zhName = "新月";
                 enName = "New Moon";
-            } else if (phase >= 0.02 && phase < 0.23) {
+            } else if (elongation >= 10 && elongation < 82) {
                 zhName = "蛾眉月";
                 enName = "Waxing Crescent";
-            } else if (phase >= 0.23 && phase < 0.27) {
+            } else if (elongation >= 82 && elongation < 98) {
                 zhName = "上弦月";
                 enName = "First Quarter";
-            } else if (phase >= 0.27 && phase < 0.48) {
+            } else if (elongation >= 98 && elongation < 170) {
                 zhName = "盈凸月";
                 enName = "Waxing Gibbous";
-            } else if (phase >= 0.48 && phase < 0.52) {
+            } else if (elongation >= 170 && elongation < 190) {
                 zhName = "滿月";
                 enName = "Full Moon";
-            } else if (phase >= 0.52 && phase < 0.73) {
+            } else if (elongation >= 190 && elongation < 262) {
                 zhName = "虧凸月";
                 enName = "Waning Gibbous";
-            } else if (phase >= 0.73 && phase < 0.77) {
+            } else if (elongation >= 262 && elongation < 278) {
                 zhName = "下弦月";
                 enName = "Third Quarter";
             } else {
@@ -274,7 +295,7 @@
                 enName = "Waning Crescent";
             }
 
-            return { zh: zhName, en: enName, imgIndex: imageIndex };
+            return { zh: zhName, en: enName, imgIndex: imgIndex };
         }
 
         const dateInput = document.getElementById('birthdate');
@@ -283,15 +304,13 @@
         const moonNameZh = document.getElementById('moonNameZh');
         const moonNameEn = document.getElementById('moonNameEn');
 
-        // 更新月相與圖片
         function updateMoonPhase() {
             const val = dateInput.value;
             if (!val) return;
 
             const [year, month, day] = val.split('-').map(Number);
-            const phaseData = getAstronomicalMoonPhase(year, month, day);
+            const phaseData = getAccurateMoonPhase(year, month, day);
 
-            // 圖片淡入更新
             moonImage.style.opacity = '0';
             setTimeout(() => {
                 moonImage.src = `moon_${phaseData.imgIndex}.png`;
@@ -302,7 +321,6 @@
             moonNameEn.textContent = phaseData.en;
         }
 
-        // 重置為今日日期
         function resetToToday() {
             const now = new Date();
             const y = now.getFullYear();
@@ -316,7 +334,6 @@
         dateInput.addEventListener('input', updateMoonPhase);
         resetBtn.addEventListener('click', resetToToday);
 
-        // 頁面初始化
         window.addEventListener('DOMContentLoaded', resetToToday);
     </script>
 </body>
