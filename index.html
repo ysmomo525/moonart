@@ -44,16 +44,15 @@
             background: transparent;
             border: none;
             box-shadow: none;
-            /* 上下留白依據螢幕高度動態計算，並兼容 safe-area */
             padding: max(20px, env(safe-area-inset-top, 20px)) 16px max(20px, env(safe-area-inset-bottom, 20px));
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* 頂部 Logo、中間月相、底部 Logo 完美均分 */
+            justify-content: space-between; /* 頂部 Logo、中間月相、底部 Logo 均分 */
             align-items: center;
             text-align: center;
         }
 
-        /* 1. 頂部：品牌 Logo（防擠壓、動態縮放） */
+        /* 1. 頂部：品牌 Logo */
         .brand-logo-wrap {
             display: flex;
             justify-content: center;
@@ -77,11 +76,11 @@
             justify-content: center;
             width: 100%;
             flex: 1;
-            min-height: 0; /* 防止子元素撐爆容器 */
+            min-height: 0;
             margin: 1vh 0;
         }
 
-        /* 月相圖展示容器（根據 iPad 高度動態縮放） */
+        /* 月相圖展示容器 */
         .moon-display-wrap {
             width: min(220px, 26vh);
             height: min(220px, 26vh);
@@ -129,7 +128,7 @@
             font-weight: 500;
         }
 
-        /* 日期選擇器與重置按鈕（直角俐落設計） */
+        /* 日期選擇器與重置按鈕 */
         .input-group {
             display: flex;
             gap: 10px;
@@ -163,7 +162,6 @@
             cursor: pointer;
         }
 
-        /* 重置按鈕 */
         .btn-reset {
             background: rgba(79, 168, 255, 0.15);
             border: 1px solid #4fa8ff;
@@ -182,7 +180,7 @@
             color: #030712;
         }
 
-        /* 3. 底部：活動 Logo（防擠壓、底端貼合） */
+        /* 3. 底部：活動 Logo */
         .event-logo-wrap {
             display: flex;
             justify-content: center;
@@ -228,13 +226,13 @@
     </div>
 
     <script>
-        // 農曆 1~30 天對應之月相名稱
+        // ✅ 嚴格校正後的農曆 1~30 天對應月相中英文名稱
         function getPhaseName(dayNum) {
             if (dayNum === 1 || dayNum === 2) {
                 return { zh: "新月", en: "New Moon" };
             } else if (dayNum >= 3 && dayNum <= 7) {
                 return { zh: "蛾眉月", en: "Waxing Crescent" };
-            } else if (dayNum >= 8 || dayNum === 9) {
+            } else if (dayNum === 8 || dayNum === 9) {
                 return { zh: "上弦月", en: "First Quarter" };
             } else if (dayNum >= 10 && dayNum <= 14) {
                 return { zh: "盈凸月", en: "Waxing Gibbous" };
@@ -245,7 +243,7 @@
             } else if (dayNum === 22 || dayNum === 23) {
                 return { zh: "下弦月", en: "Third Quarter" };
             } else {
-                return { zh: "殘月", en: "Waning Crescent" };
+                return { zh: "殘月", en: "Waning Crescent" }; // 24~30日精準判定為殘月
             }
         }
 
